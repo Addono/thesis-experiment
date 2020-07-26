@@ -3,7 +3,7 @@
 ## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
 ##
 global:
-#   imageRegistry: myRegistryName
+  imageRegistry: container-registry-proxy.herokuapp.com
 #   imagePullSecrets:
 #     - myRegistryKeySecretName
 #   storageClass: myStorageClass
@@ -27,9 +27,9 @@ global:
 ## ref: https://hub.docker.com/r/bitnami/postgresql/tags/
 ##
 postgresqlImage:
-  registry: container-registry-proxy.herokuapp.com
+  #registry: container-registry-proxy.herokuapp.com
   repository: bitnami/postgresql-repmgr
-  tag: 11
+  tag: 11.8.0-debian-10-r55
   ## Specify a imagePullPolicy. Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
@@ -49,9 +49,9 @@ postgresqlImage:
 ## ref: https://hub.docker.com/r/bitnami/pgpool/tags/
 ##
 pgpoolImage:
-  registry: container-registry-proxy.herokuapp.com
+  #registry: container-registry-proxy.herokuapp.com
   repository: bitnami/pgpool
-  #tag: 4
+  tag: 4.1.2-debian-10-r59
   ## Specify a imagePullPolicy. Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##

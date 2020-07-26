@@ -1,39 +1,39 @@
 settings:
-  kubeContext: "do-ams3-k8s-1-17-5-do-0-ams3-1590582774660"
+  kubeContext: "do-ams3-thesis"
 
 namespaces:
-  default:
-    protected: false
-  external-dns:
-    protected: false
-  kubeapps:
-    protected: false
+  # default:
+  #   protected: false
+  # external-dns:
+  #   protected: false
+  # kubeapps:
+  #   protected: false
   postgresql-ha:
     protected: false
 
 helmRepos:
   bitnami: "https://charts.bitnami.com/bitnami"
-  traefik: "https://containous.github.io/traefik-helm-chart"
+  # traefik: "https://containous.github.io/traefik-helm-chart"
 
 apps:
-  external-dns:
-    namespace: "external-dns"
-    enabled: false
-    chart: "bitnami/external-dns"
-    version: "2.20.10"
-    valuesFile: "external-dns/values.yaml"
-  kubeapps:
-    namespace: "kubeapps"
-    enabled: true
-    chart: "bitnami/kubeapps"
-    version: "3.6.0"
-    valuesFile: "kubeapps/values.yaml"
-  redis:
-    namespace: "default"
-    enabled: false
-    chart: "bitnami/redis"
-    version: "10.6.15"
-    valuesFile: "redis/values.yaml"
+  # external-dns:
+  #   namespace: "external-dns"
+  #   enabled: false
+  #   chart: "bitnami/external-dns"
+  #   version: "2.20.10"
+  #   valuesFile: "external-dns/values.yaml"
+  # kubeapps:
+  #   namespace: "kubeapps"
+  #   enabled: false
+  #   chart: "bitnami/kubeapps"
+  #   version: "3.6.0"
+  #   valuesFile: "kubeapps/values.yaml"
+  # redis:
+  #   namespace: "default"
+  #   enabled: false
+  #   chart: "bitnami/redis"
+  #   version: "10.6.15"
+  #   valuesFile: "redis/values.yaml"
   postgresql-ha:
     namespace: "postgresql-ha"
     enabled: true
