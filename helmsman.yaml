@@ -4,8 +4,6 @@ settings:
 namespaces:
   # default:
   #   protected: false
-  # external-dns:
-  #   protected: false
   # kubeapps:
   #   protected: false
   postgresql-ha:
@@ -16,12 +14,6 @@ helmRepos:
   # traefik: "https://containous.github.io/traefik-helm-chart"
 
 apps:
-  # external-dns:
-  #   namespace: "external-dns"
-  #   enabled: false
-  #   chart: "bitnami/external-dns"
-  #   version: "2.20.10"
-  #   valuesFile: "external-dns/values.yaml"
   # kubeapps:
   #   namespace: "kubeapps"
   #   enabled: false
