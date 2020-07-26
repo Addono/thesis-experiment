@@ -231,4 +231,8 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,venv,macos,linux,windows,visualstudiocode
 
+# Temporary directory used by Helmsman
 .helmsman-tmp
+
+# Virtual environment created by direnv
+.direnv
