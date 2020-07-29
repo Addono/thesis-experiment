@@ -115,6 +115,9 @@ def run_test():
         # Inspect the status code to see if our workload test was successful
         return workload_result.returncode == 0
 
+    def amount_of_restarts() -> int:
+        return sum(container_status["restartCount"] for container_status in get_container_statuses())
+
     # Collect time based metrics until all are acquired
     while not all(metrics.values()):
         # Check if all containers are ready
@@ -132,7 +135,7 @@ def run_test():
         print(f"{name}: {end_time - start_time}")
 
     # Detect amount of restarts
-    pass  # @todo
+    print(f"restarts: {amount_of_restarts()}")
 
 
 def run_command(command: Command, cluster_context: str):
