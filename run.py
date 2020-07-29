@@ -3,7 +3,7 @@ import json
 import subprocess
 import time
 from contextlib import contextmanager
-from typing import Iterator, TypedDict, Optional, Union
+from typing import Iterator, TypedDict, Optional, Union, Iterable
 
 
 class Cluster(TypedDict):
@@ -70,6 +70,15 @@ def get_pods_data() -> dict:
     return json.loads(query.stdout)
 
 
+def get_container_statuses() -> Iterable:
+    pods_data = get_pods_data()
+
+    yield from (container_status
+                for pod in pods_data["items"]
+                for container_status in pod["status"]["containerStatuses"]
+                )
+
+
 def run_test():
     def execute_workload_test():
         with open("load.sql", "r") as load_sql:
@@ -93,14 +102,8 @@ def run_test():
     }
 
     def all_containers_initialized() -> bool:
-        # Collect the status of all our pods
-        pod_data = get_pods_data()
-
         # Check if all containers are ready
-        container_statuses = [container_status
-                              for pod in pod_data["items"]
-                              for container_status in pod["status"]["containerStatuses"]
-                              ]
+        container_statuses = get_container_statuses()
 
         # Check if all containers initialized
         return all(map(lambda x: x["ready"], container_statuses))
