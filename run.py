@@ -48,13 +48,14 @@ def parse_arguments() -> Arguments:
 
 def deploy(cluster_context: str):
     return subprocess.run([
-        "helmsman", "-f", "helmsman.yaml", "-apply", "-context-override", cluster_context,
+        "helmsman", "-f", "helmsman.yaml", "-apply",
     ])
 
 
 def destroy(cluster_context: str):
     return subprocess.run([
-        "helmsman", "-f", "helmsman.yaml", "-destroy", "-context-override", cluster_context,
+        # Overwriting context breaks helmsman
+        "helmsman", "-f", "helmsman.yaml", "-destroy",
     ])
 
 
