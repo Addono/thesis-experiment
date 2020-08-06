@@ -48,14 +48,14 @@ def parse_arguments() -> Arguments:
 
 def deploy(cluster_context: str):
     return subprocess.run([
-        "helmsman", "-f", "helmsman.yaml", "-apply",
+        "helmsman", "-f", "helmsman-postgresql-ha.yaml", "-apply",
     ])
 
 
 def destroy(cluster_context: str):
     return subprocess.run([
         # Overwriting context breaks helmsman
-        "helmsman", "-f", "helmsman.yaml", "-destroy",
+        "helmsman", "-f", "helmsman-postgresql-ha.yaml", "-destroy",
     ])
 
 
