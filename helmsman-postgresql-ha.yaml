@@ -2,33 +2,17 @@ settings:
   kubeContext: "do-ams3-thesis"
 
 namespaces:
-  # default:
-  #   protected: false
-  # kubeapps:
-  #   protected: false
   postgresql-ha:
     protected: false
 
 helmRepos:
   bitnami: "https://charts.bitnami.com/bitnami"
-  # traefik: "https://containous.github.io/traefik-helm-chart"
 
 apps:
-  # kubeapps:
-  #   namespace: "kubeapps"
-  #   enabled: false
-  #   chart: "bitnami/kubeapps"
-  #   version: "3.6.0"
-  #   valuesFile: "kubeapps/values.yaml"
-  # redis:
-  #   namespace: "default"
-  #   enabled: false
-  #   chart: "bitnami/redis"
-  #   version: "10.6.15"
-  #   valuesFile: "redis/values.yaml"
   postgresql-ha:
     namespace: "postgresql-ha"
     enabled: true
     chart: "bitnami/postgresql-ha"
     version: "3.2.7"
     valuesFile: "postgresql-ha/values.yaml"
+
