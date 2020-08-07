@@ -43,12 +43,8 @@ APPLICATIONS = {
 }
 
 
-class Cluster(TypedDict):
-    contextName: str
-
-
 @contextmanager
-def temporary_kubernetes_cluster(name: str = "temp", region: str = 'ams3') -> Iterator[Cluster]:
+def temporary_kubernetes_cluster(name: str = "temp", region: str = 'ams3') -> Iterator[str]:
     create = subprocess.run(['doctl', 'kubernetes', 'cluster', 'create', '--region', region, name])
 
     if create.returncode > 0:
@@ -252,6 +248,6 @@ if __name__ == "__main__":
         run_command(command=arguments["command"], cluster_context=arguments["cluster"],
                     application=arguments["application"])
     else:
-        with temporary_kubernetes_cluster() as cluster:
-            run_command(command=arguments["command"], cluster_context=cluster["contextName"],
+        with temporary_kubernetes_cluster() as cluster_context:
+            run_command(command=arguments["command"], cluster_context=cluster_context,
                         application=arguments["application"])
