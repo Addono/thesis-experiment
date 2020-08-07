@@ -187,11 +187,24 @@ def run_test(namespace: str, workload):
     print(f"restarts: {amount_of_restarts()}")
 
 
-def add_repo(name: str, url: str):
-    result = subprocess.run(["helm", "repo", "add", name, url])
+def has_repo(name: str) -> bool:
+    # Query Helm for all available repos
+    query = subprocess.run(["helm", "repo", "list", "-o", "json"], stdout=subprocess.PIPE, text=True)
+    repos: list = json.loads(query.stdout)
 
-    if result.returncode > 0:
-        raise Exception("Failed adding bitnami repo")
+    # Find the repo which name matches the one we are looking for
+    match = [filter(lambda item: item["name"] == name, repos)]
+
+    # Return true if we found a match
+    return len(match) > 0
+
+
+def add_repo(name: str, url: str):
+    if not has_repo(name):
+        result = subprocess.run(["helm", "repo", "add", name, url])
+
+        if result.returncode > 0:
+            raise Exception("Failed adding bitnami repo")
 
 
 def run_command(command: Command, cluster_context: str, application: str):
@@ -234,7 +247,9 @@ if __name__ == "__main__":
         if context_switch.returncode > 0:
             raise Exception("Failed switching context to '%s'" % arguments["cluster"])
 
-        run_command(command=arguments["command"], cluster_context=arguments["cluster"], application=arguments["application"])
+        run_command(command=arguments["command"], cluster_context=arguments["cluster"],
+                    application=arguments["application"])
     else:
         with temporary_kubernetes_cluster() as cluster:
-            run_command(command=arguments["command"], cluster_context=cluster["contextName"], application=arguments["application"])
+            run_command(command=arguments["command"], cluster_context=cluster["contextName"],
+                        application=arguments["application"])
