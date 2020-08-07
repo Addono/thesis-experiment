@@ -5,7 +5,7 @@ import time
 from contextlib import contextmanager
 from typing import Iterator, TypedDict, Optional, Union, Iterable
 
-with open("load.sql") as load_sql:
+with open("postgresql-ha/load.sql") as load_sql:
     APPLICATIONS = {
         "postgresql-ha": {
             "chart": "bitnami/postgresql-ha",
@@ -136,7 +136,7 @@ def run_test(namespace: str, workload):
             'kubectl', 'run', 'workload', '--rm', '--tty', '-i', '--restart', 'Never',
             '--namespace', namespace, '--image', workload["image"],
             *[x for name, value in workload["env"].items() for x in ("--env", f"{name}={value}")],
-            '--command', '--', *workload["command"]
+            '--command', '--', *workload["command"],
         ])
 
     # Register the starting time
