@@ -41,7 +41,6 @@ with open("load.sql") as load_sql:
     }
 
 
-
 class Cluster(TypedDict):
     contextName: str
 
@@ -67,6 +66,7 @@ Command = type(Union['test', 'deploy', 'destroy', 'all'])
 class Arguments(TypedDict):
     cluster: Optional[str]
     command: Command
+    application: str
 
 
 def parse_arguments() -> Arguments:
@@ -80,6 +80,7 @@ def parse_arguments() -> Arguments:
     return {
         'cluster': args.cluster,
         'command': args.command,
+        'application': args.application,
     }
 
 
@@ -125,7 +126,7 @@ def get_container_statuses() -> Iterable:
 
     yield from (container_status
                 for pod in pods_data["items"]
-                for container_status in pod["status"]["containerStatuses"]
+                for container_status in pod["status"].get("containerStatuses", [])
                 )
 
 
@@ -193,32 +194,30 @@ def add_repo(name: str, url: str):
         raise Exception("Failed adding bitnami repo")
 
 
-def run_command(command: Command, cluster_context: str):
-    name = "postgresql-ha"
-
-    app = APPLICATIONS[name]
+def run_command(command: Command, cluster_context: str, application: str):
+    app_config = APPLICATIONS[application]
 
     if command == "deploy":
         # Prepare the environment
-        add_repo(app["repo_name"], app["repo_url"])
-        create_namespace(app["namespace"])
+        add_repo(app_config["repo_name"], app_config["repo_url"])
+        create_namespace(app_config["namespace"])
 
         # Run the deploy
-        deploy(namespace=app["namespace"],
-               name=name,
-               chart=app["chart"],
-               values=app["values"],
-               version=app["version"],
+        deploy(namespace=app_config["namespace"],
+               name=application,
+               chart=app_config["chart"],
+               values=app_config["values"],
+               version=app_config["version"],
                )
     elif command == "destroy":
-        destroy_deployment(app["namespace"])
-        destroy_namespace(app["namespace"])
+        destroy_deployment(app_config["namespace"])
+        destroy_namespace(app_config["namespace"])
     elif command == "test":
-        run_test(app["namespace"], app["workload"])
+        run_test(app_config["namespace"], app_config["workload"])
     elif command == "all":
-        run_command("deploy", cluster_context)
-        run_command("test", cluster_context)
-        run_command("destroy", cluster_context)
+        run_command("deploy", cluster_context, application)
+        run_command("test", cluster_context, application)
+        run_command("destroy", cluster_context, application)
     else:
         raise Exception(f"Command '{command}' not found")
 
@@ -235,7 +234,7 @@ if __name__ == "__main__":
         if context_switch.returncode > 0:
             raise Exception("Failed switching context to '%s'" % arguments["cluster"])
 
-        run_command(command=arguments["command"], cluster_context=arguments["cluster"])
+        run_command(command=arguments["command"], cluster_context=arguments["cluster"], application=arguments["application"])
     else:
         with temporary_kubernetes_cluster() as cluster:
-            run_command(command=arguments["command"], cluster_context=cluster["contextName"])
+            run_command(command=arguments["command"], cluster_context=cluster["contextName"], application=arguments["application"])
