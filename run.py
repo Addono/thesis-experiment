@@ -5,40 +5,42 @@ import time
 from contextlib import contextmanager
 from typing import Iterator, TypedDict, Optional, Union, Iterable
 
-with open("postgresql-ha/load.sql") as load_sql:
-    APPLICATIONS = {
-        "postgresql-ha": {
-            "chart": "bitnami/postgresql-ha",
-            "version": "3.2.7",
-            "namespace": "postgresql-ha",
-            "values": "postgresql-ha/values.yaml",
-            "repo_name": "bitnami",
-            "repo_url": "https://charts.bitnami.com/bitnami",
-            "workload": {
-                "image": "bitnami/postgresql:11",
-                "env": {
-                    "PGPASSWORD": "password",
-                    "PGCONNECT_TIMEOUT": "1",
-                },
-                "command": [
-                    'psql',
-                    '-h', 'postgresql-ha-pgpool',  # Set the host
-                    '-p', '5432',  # The port
-                    '-U', 'postgres',  # The user
-                    '-d', 'postgres',  # The database
-                    '-c', load_sql.read(),  # The SQL to run
-                ]
-            }
-        },
-        "redis-cluster": {
-            "chart": "bitnami/redis-cluster",
-            "version": "3.1.10",
-            "namespace": "redis-cluster",
-            "values": "redis-cluster/values.yaml",
-            "repo_name": "bitnami",
-            "repo_url": "https://charts.bitnami.com/bitnami",
+with open("postgresql-ha/load.sql") as fp:
+    POSTGRESQL_WORKLOAD_SQL = fp.read()
+
+APPLICATIONS = {
+    "postgresql-ha": {
+        "chart": "bitnami/postgresql-ha",
+        "version": "3.2.7",
+        "namespace": "postgresql-ha",
+        "values": "postgresql-ha/values.yaml",
+        "repo_name": "bitnami",
+        "repo_url": "https://charts.bitnami.com/bitnami",
+        "workload": {
+            "image": "bitnami/postgresql:11",
+            "env": {
+                "PGPASSWORD": "password",
+                "PGCONNECT_TIMEOUT": "1",
+            },
+            "command": lambda host: [
+                'psql',
+                '-h', host,  # Set the host
+                '-p', '5432',  # The port
+                '-U', 'postgres',  # The user
+                '-d', 'postgres',  # The database
+                '-c', POSTGRESQL_WORKLOAD_SQL,  # The SQL to run
+            ]
         }
+    },
+    "redis-cluster": {
+        "chart": "bitnami/redis-cluster",
+        "version": "3.1.10",
+        "namespace": "redis-cluster",
+        "values": "redis-cluster/values.yaml",
+        "repo_name": "bitnami",
+        "repo_url": "https://charts.bitnami.com/bitnami",
     }
+}
 
 
 class Cluster(TypedDict):
@@ -131,12 +133,12 @@ def get_container_statuses() -> Iterable:
 
 
 def run_test(namespace: str, workload):
-    def execute_workload_test():
+    def execute_workload_test(host: str):
         return subprocess.run([
             'kubectl', 'run', 'workload', '--rm', '--tty', '-i', '--restart', 'Never',
             '--namespace', namespace, '--image', workload["image"],
             *[x for name, value in workload["env"].items() for x in ("--env", f"{name}={value}")],
-            '--command', '--', *workload["command"],
+            '--command', '--', *workload["command"](host),
         ])
 
     # Register the starting time
@@ -157,9 +159,9 @@ def run_test(namespace: str, workload):
         # Check if all containers initialized
         return all(map(lambda x: x["ready"], container_statuses))
 
-    def can_handle_request() -> bool:
+    def can_handle_request(host: str) -> bool:
         # Run a small workload as to test if it is functional
-        workload_result = execute_workload_test()
+        workload_result = execute_workload_test(host=host)
 
         # Inspect the status code to see if our workload test was successful
         return workload_result.returncode == 0
@@ -176,7 +178,7 @@ def run_test(namespace: str, workload):
 
         # Check if the application can process a workload
         if not metrics["time_to_first_request"]:
-            if can_handle_request():
+            if can_handle_request(host="postgresql-ha-pgpool"):
                 metrics["time_to_first_request"] = time.time()
 
     # Measure finish time
