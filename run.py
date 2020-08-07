@@ -85,6 +85,12 @@ def destroy_deployment(namespace: str):
     ])
 
 
+def destroy_namespace(namespace: str):
+    return subprocess.run([
+        "kubectl", "delete", "namespace", namespace
+    ])
+
+
 def get_pods_data() -> dict:
     query = subprocess.run([
         "kubectl", "get", "pods", "--output", "json",
@@ -190,6 +196,7 @@ def run_command(command: Command, cluster_context: str):
                )
     elif command == "destroy":
         destroy_deployment(app["namespace"])
+        destroy_namespace(app["namespace"])
     elif command == "test":
         run_test(app["namespace"])
     elif command == "all":
