@@ -3,7 +3,7 @@ import json
 import subprocess
 import time
 from contextlib import contextmanager
-from typing import Iterator, TypedDict, Optional, Union, Iterable
+from typing import Iterator, TypedDict, Optional, Union, Iterable, Callable
 
 with open("postgresql-ha/load.sql") as fp:
     POSTGRESQL_WORKLOAD_SQL = fp.read()
@@ -29,7 +29,8 @@ APPLICATIONS = {
                 '-U', 'postgres',  # The user
                 '-d', 'postgres',  # The database
                 '-c', POSTGRESQL_WORKLOAD_SQL,  # The SQL to run
-            ]
+            ],
+            "pod_filter": lambda pod_name: pod_name.startswith("postgresql-ha-pgpool-"),
         }
     },
     "redis-cluster": {
@@ -128,6 +129,17 @@ def get_container_statuses() -> Iterable:
                 )
 
 
+def get_workload_pod_ips(filter_function: Callable[[str], bool]) -> Iterable[str]:
+    pods_data = get_pods_data()
+
+    filtered_pods = filter(
+        lambda pod: filter_function(pod["metadata"]["name"]),
+        pods_data["items"]
+    )
+
+    yield from map(lambda pod: pod["status"]["podIP"], filtered_pods)
+
+
 def run_test(namespace: str, workload):
     def execute_workload_test(host: str):
         return subprocess.run([
@@ -174,7 +186,10 @@ def run_test(namespace: str, workload):
 
         # Check if the application can process a workload
         if not metrics["time_to_first_request"]:
-            if can_handle_request(host="postgresql-ha-pgpool"):
+            workload_pods = get_workload_pod_ips(workload["pod_filter"])
+            pods_can_handle_workload = [can_handle_request(host=pod_name) for pod_name in workload_pods]
+
+            if any(pods_can_handle_workload):
                 metrics["time_to_first_request"] = time.time()
 
     # Measure finish time
