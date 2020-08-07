@@ -5,6 +5,25 @@ import time
 from contextlib import contextmanager
 from typing import Iterator, TypedDict, Optional, Union, Iterable
 
+APPLICATIONS = {
+    "postgresql-ha": {
+        "chart": "bitnami/postgresql-ha",
+        "version": "3.2.7",
+        "namespace": "postgresql-ha",
+        "values": "postgresql-ha/values.yaml",
+        "repo_name": "bitnami",
+        "repo_url": "https://charts.bitnami.com/bitnami",
+    },
+    "redis-cluster": {
+        "chart": "bitnami/redis-cluster",
+        "version": "3.1.10",
+        "namespace": "redis-cluster",
+        "values": "redis-cluster/values.yaml",
+        "repo_name": "bitnami",
+        "repo_url": "https://charts.bitnami.com/bitnami",
+    }
+}
+
 
 class Cluster(TypedDict):
     contextName: str
@@ -46,16 +65,23 @@ def parse_arguments() -> Arguments:
     }
 
 
-def deploy(cluster_context: str):
+def create_namespace(name: str):
+    return subprocess.run(["kubectl", "create", "namespace", name])
+
+
+def deploy(namespace: str, name: str, chart: str, values: str, version: str):
     return subprocess.run([
-        "helmsman", "-f", "helmsman-postgresql-ha.yaml", "-apply",
+        "helm", "install", name, chart,
+        "-f", values,
+        "--namespace", namespace,
+        "--version", version,
     ])
 
 
-def destroy(cluster_context: str):
+def destroy_deployment(namespace: str):
     return subprocess.run([
         # Overwriting context breaks helmsman
-        "helmsman", "-f", "helmsman-postgresql-ha.yaml", "-destroy",
+        "helm", "delete", "postgresql-ha", "--namespace", namespace
     ])
 
 
@@ -79,13 +105,13 @@ def get_container_statuses() -> Iterable:
                 )
 
 
-def run_test():
+def run_test(namespace: str):
     def execute_workload_test():
         with open("load.sql", "r") as load_sql:
             return subprocess.run([
-                'kubectl', 'run', 'postgresql-ha-client', '--rm', '--tty', '-i', '--restart', 'Never', '--namespace',
-                'postgresql-ha', '--image', 'bitnami/postgresql:11', '--env', 'PGPASSWORD=password', '--env',
-                'PGCONNECT_TIMEOUT=1', '--command',
+                'kubectl', 'run', 'postgresql-ha-client', '--rm', '--tty', '-i', '--restart', 'Never',
+                '--namespace', namespace, '--image', 'bitnami/postgresql:11', '--env', 'PGPASSWORD=password',
+                '--env', 'PGCONNECT_TIMEOUT=1', '--command',
                 '--', 'psql', '-h', 'postgresql-ha-pgpool', '-p', '5432', '-U', 'postgres', '-d', 'postgres', '-c',
                 load_sql.read()
             ])
@@ -138,13 +164,34 @@ def run_test():
     print(f"restarts: {amount_of_restarts()}")
 
 
+def add_repo(name: str, url: str):
+    result = subprocess.run(["helm", "repo", "add", name, url])
+
+    if result.returncode > 0:
+        raise Exception("Failed adding bitnami repo")
+
+
 def run_command(command: Command, cluster_context: str):
+    name = "postgresql-ha"
+
+    app = APPLICATIONS[name]
+
     if command == "deploy":
-        deploy(cluster_context)
+        # Prepare the environment
+        add_repo(app["repo_name"], app["repo_url"])
+        create_namespace(app["namespace"])
+
+        # Run the deploy
+        deploy(namespace=app["namespace"],
+               name=name,
+               chart=app["chart"],
+               values=app["values"],
+               version=app["version"],
+               )
     elif command == "destroy":
-        destroy(cluster_context)
+        destroy_deployment(app["namespace"])
     elif command == "test":
-        run_test()
+        run_test(app["namespace"])
     elif command == "all":
         run_command("deploy", cluster_context)
         run_command("test", cluster_context)
