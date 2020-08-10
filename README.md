@@ -6,6 +6,7 @@ You need to have the following available on your system:
 * Python 3
 * `kubectl`
 * `kubectx`
+* Helm 3
 * If you want it to create a new and temporary Kubernetes cluster, then you need Digital Ocean CLI (`doctl`) locally available and authenticated
 
 ## Getting started
