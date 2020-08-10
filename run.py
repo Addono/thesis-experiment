@@ -3,7 +3,7 @@ import json
 import subprocess
 import time
 from contextlib import contextmanager
-from typing import Iterator, TypedDict, Optional, Union, Iterable, Callable
+from typing import Iterator, TypedDict, Optional, Union, Iterable, Callable, io
 
 with open("postgresql-ha/load.sql") as fp:
     POSTGRESQL_WORKLOAD_SQL = fp.read()
@@ -66,6 +66,7 @@ class Arguments(TypedDict):
     cluster: Optional[str]
     command: Command
     application: str
+    results_file: Optional[io.TextIO]
 
 
 def parse_arguments() -> Arguments:
@@ -74,12 +75,15 @@ def parse_arguments() -> Arguments:
     parser.add_argument('application', type=str, choices=APPLICATIONS.keys(), help='The application under test.')
     parser.add_argument('--cluster', type=str,
                         help='The name of the cluster to use, if left empty a temporary cluster will be created.')
+    parser.add_argument('--results-file', '-f', type=argparse.FileType('a'),
+                        help='The file to write the results to. Only applicable if tests are ran.')
     args = parser.parse_args()
 
     return {
         'cluster': args.cluster,
         'command': args.command,
         'application': args.application,
+        'results_file': args.results_file,
     }
 
 
@@ -148,12 +152,9 @@ def run_test(namespace: str, workload) -> dict:
             '--command', '--', *workload["command"](host),
         ])
 
-    # Register the starting time
-    start_time = time.time()
-    print("Starting time: ", start_time)
-
     # Define a variable to hold the metrics we are collecting
     metrics: dict = {
+        'start_time': time.time(),
         'time_to_initialize': None,
         'time_to_first_request': None,
         'time_to_all_requests': None,
@@ -181,7 +182,7 @@ def run_test(namespace: str, workload) -> dict:
         # Check if all containers are ready
         if not metrics["time_to_initialize"]:
             if all_containers_initialized(namespace=namespace):
-                metrics["time_to_initialize"] = time.time()
+                metrics["time_to_initialize"] = time.time() - metrics["start_time"]
 
         # Check if the application can process a workload
         if not metrics["time_to_first_request"] or not metrics["time_to_all_requests"]:
@@ -190,19 +191,25 @@ def run_test(namespace: str, workload) -> dict:
                                         for pod_name in workload_pods]
 
             if not metrics["time_to_first_request"] and any(pods_can_handle_workload):
-                metrics["time_to_first_request"] = min(filter(lambda x: not not x, pods_can_handle_workload))
+                # Find the time at which the first request succeeded
+                first_request = min(filter(lambda x: not not x, pods_can_handle_workload))
+
+                # Store the time till first request metric
+                metrics["time_to_first_request"] = first_request - metrics["start_time"]
 
             if not metrics["time_to_all_requests"] \
                     and all(pods_can_handle_workload) \
                     and len(pods_can_handle_workload) > 0:
-                metrics["time_to_all_requests"] = max(pods_can_handle_workload)
+                metrics["time_to_all_requests"] = max(pods_can_handle_workload) - metrics["start_time"]
 
     # Set the amount of restarts metric
     metrics["restarts"] = amount_of_restarts(namespace)
 
-    # Measure finish time
-    for name, end_time in metrics.items():
-        print(f"{name}: {end_time - start_time}")
+    # Store the time start metric
+    metrics["end_time"] = time.time()
+
+    # Print the collected metrics
+    print(metrics)
 
     return metrics
 
@@ -227,7 +234,15 @@ def add_repo(name: str, url: str):
             raise Exception("Failed adding bitnami repo")
 
 
-def run_command(command: Command, cluster_context: str, application: str):
+def store_metrics(metrics: dict, file: io.TextIO) -> None:
+    # Encode the data as a JSON string
+    encoded_data = json.dumps(metrics)
+
+    # Append the data to a file
+    file.write(f"{encoded_data}\n")
+
+
+def run_command(command: Command, cluster_context: str, application: str, results_file: Optional[io.TextIO]):
     app_config = APPLICATIONS[application]
 
     if command == "deploy":
@@ -246,11 +261,14 @@ def run_command(command: Command, cluster_context: str, application: str):
         destroy_deployment(app_config["namespace"])
         destroy_namespace(app_config["namespace"])
     elif command == "test":
-        run_test(app_config["namespace"], app_config["workload"])
+        metrics = run_test(app_config["namespace"], app_config["workload"])
+
+        if results_file:
+            store_metrics(metrics, results_file)
     elif command == "all":
-        run_command("deploy", cluster_context, application)
-        run_command("test", cluster_context, application)
-        run_command("destroy", cluster_context, application)
+        run_command("deploy", cluster_context, application, results_file)
+        run_command("test", cluster_context, application, results_file)
+        run_command("destroy", cluster_context, application, results_file)
     else:
         raise Exception(f"Command '{command}' not found")
 
@@ -268,8 +286,8 @@ if __name__ == "__main__":
             raise Exception("Failed switching context to '%s'" % arguments["cluster"])
 
         run_command(command=arguments["command"], cluster_context=arguments["cluster"],
-                    application=arguments["application"])
+                    application=arguments["application"], results_file=arguments["results_file"])
     else:
         with temporary_kubernetes_cluster() as cluster_context:
             run_command(command=arguments["command"], cluster_context=cluster_context,
-                        application=arguments["application"])
+                        application=arguments["application"], results_file=arguments["results_file"])
