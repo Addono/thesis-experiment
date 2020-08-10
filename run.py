@@ -109,9 +109,9 @@ def destroy_namespace(namespace: str):
     ])
 
 
-def get_pods_data() -> dict:
+def get_pods_data(namespace: str) -> dict:
     query = subprocess.run([
-        "kubectl", "get", "pods", "--output", "json",
+        "kubectl", "get", "pods", "--output", "json", "--namespace", namespace,
     ], stdout=subprocess.PIPE, text=True)
 
     if query.returncode > 0:
@@ -120,8 +120,8 @@ def get_pods_data() -> dict:
     return json.loads(query.stdout)
 
 
-def get_container_statuses() -> Iterable:
-    pods_data = get_pods_data()
+def get_container_statuses(namespace: str) -> Iterable:
+    pods_data = get_pods_data(namespace=namespace)
 
     yield from (container_status
                 for pod in pods_data["items"]
@@ -129,22 +129,22 @@ def get_container_statuses() -> Iterable:
                 )
 
 
-def get_workload_pod_ips(filter_function: Callable[[str], bool]) -> Iterable[str]:
-    pods_data = get_pods_data()
+def get_workload_pod_ips(filter_function: Callable[[str], bool], namespace: str) -> Iterable[Optional[str]]:
+    pods_data = get_pods_data(namespace=namespace)
 
     filtered_pods = filter(
         lambda pod: filter_function(pod["metadata"]["name"]),
         pods_data["items"]
     )
 
-    yield from map(lambda pod: pod["status"]["podIP"], filtered_pods)
+    yield from map(lambda pod: pod["status"].get("podIP"), filtered_pods)
 
 
-def run_test(namespace: str, workload):
+def run_test(namespace: str, workload) -> dict:
     def execute_workload_test(host: str):
         return subprocess.run([
             'kubectl', 'run', 'workload', '--rm', '--tty', '-i', '--restart', 'Never',
-            '--namespace', namespace, '--image', workload["image"],
+            '--namespace', "default", '--image', workload["image"],
             *[x for name, value in workload["env"].items() for x in ("--env", f"{name}={value}")],
             '--command', '--', *workload["command"](host),
         ])
@@ -157,12 +157,12 @@ def run_test(namespace: str, workload):
     metrics: dict = {
         'time_to_initialize': None,
         'time_to_first_request': None,
-        # 'time_to_all_requests': None,
+        'time_to_all_requests': None,
     }
 
-    def all_containers_initialized() -> bool:
+    def all_containers_initialized(namespace: str) -> bool:
         # Check if all containers are ready
-        container_statuses = get_container_statuses()
+        container_statuses = get_container_statuses(namespace=namespace)
 
         # Check if all containers initialized
         return all(map(lambda x: x["ready"], container_statuses))
@@ -174,30 +174,38 @@ def run_test(namespace: str, workload):
         # Inspect the status code to see if our workload test was successful
         return workload_result.returncode == 0
 
-    def amount_of_restarts() -> int:
-        return sum(container_status["restartCount"] for container_status in get_container_statuses())
+    def amount_of_restarts(namespace: str) -> int:
+        return sum(container_status["restartCount"] for container_status in get_container_statuses(namespace))
 
     # Collect time based metrics until all are acquired
     while not all(metrics.values()):
         # Check if all containers are ready
         if not metrics["time_to_initialize"]:
-            if all_containers_initialized():
+            if all_containers_initialized(namespace=namespace):
                 metrics["time_to_initialize"] = time.time()
 
         # Check if the application can process a workload
-        if not metrics["time_to_first_request"]:
-            workload_pods = get_workload_pod_ips(workload["pod_filter"])
-            pods_can_handle_workload = [can_handle_request(host=pod_name) for pod_name in workload_pods]
+        if not metrics["time_to_first_request"] or not metrics["time_to_all_requests"]:
+            workload_pods = get_workload_pod_ips(workload["pod_filter"], namespace=namespace)
+            pods_can_handle_workload = [pod_name and can_handle_request(host=pod_name) and time.time()
+                                        for pod_name in workload_pods]
 
-            if any(pods_can_handle_workload):
-                metrics["time_to_first_request"] = time.time()
+            if not metrics["time_to_first_request"] and any(pods_can_handle_workload):
+                metrics["time_to_first_request"] = min(filter(lambda x: not not x, pods_can_handle_workload))
+
+            if not metrics["time_to_all_requests"] \
+                    and all(pods_can_handle_workload) \
+                    and len(pods_can_handle_workload) > 0:
+                metrics["time_to_all_requests"] = max(pods_can_handle_workload)
+
+    # Set the amount of restarts metric
+    metrics["restarts"] = amount_of_restarts(namespace)
 
     # Measure finish time
     for name, end_time in metrics.items():
         print(f"{name}: {end_time - start_time}")
 
-    # Detect amount of restarts
-    print(f"restarts: {amount_of_restarts()}")
+    return metrics
 
 
 def has_repo(name: str) -> bool:
