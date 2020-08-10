@@ -13,7 +13,9 @@ APPLICATIONS = {
         "chart": "bitnami/postgresql-ha",
         "version": "3.2.7",
         "namespace": "postgresql-ha",
-        "values": "postgresql-ha/values.yaml",
+        "values": {
+            "base": "postgresql-ha/values.yaml",
+        },
         "repo_name": "bitnami",
         "repo_url": "https://charts.bitnami.com/bitnami",
         "workload": {
@@ -37,7 +39,9 @@ APPLICATIONS = {
         "chart": "bitnami/redis-cluster",
         "version": "3.1.10",
         "namespace": "redis-cluster",
-        "values": "redis-cluster/values.yaml",
+        "values": {
+            "base": "redis-cluster/values.yaml",
+        },
         "repo_name": "bitnami",
         "repo_url": "https://charts.bitnami.com/bitnami",
     }
@@ -91,10 +95,10 @@ def create_namespace(name: str):
     return subprocess.run(["kubectl", "create", "namespace", name])
 
 
-def deploy(namespace: str, name: str, chart: str, values: str, version: str):
+def deploy(namespace: str, name: str, chart: str, values: Iterable[str], version: str):
     return subprocess.run([
         "helm", "install", name, chart,
-        "--values", values,
+        *[x for value_file in values for x in ("--values", value_file,)],
         "--namespace", namespace,
         "--version", version,
     ])
@@ -254,7 +258,7 @@ def run_command(command: Command, cluster_context: str, application: str, result
         deploy(namespace=app_config["namespace"],
                name=application,
                chart=app_config["chart"],
-               values=app_config["values"],
+               values=[app_config["values"]["base"]],
                version=app_config["version"],
                )
     elif command == "destroy":
