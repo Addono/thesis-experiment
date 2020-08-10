@@ -98,7 +98,6 @@ def deploy(namespace: str, name: str, chart: str, values: str, version: str):
 
 def destroy_deployment(namespace: str):
     return subprocess.run([
-        # Overwriting context breaks helmsman
         "helm", "delete", "postgresql-ha", "--namespace", namespace
     ])
 
