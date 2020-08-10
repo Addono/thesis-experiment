@@ -71,7 +71,7 @@ class Arguments(TypedDict):
 def parse_arguments() -> Arguments:
     parser = argparse.ArgumentParser()
     parser.add_argument('command', type=str, choices=['test', 'deploy', 'destroy', 'all'], default='all')
-    parser.add_argument('application', type=str, choices=APPLICATIONS.keys())
+    parser.add_argument('application', type=str, choices=APPLICATIONS.keys(), help='The application under test.')
     parser.add_argument('--cluster', type=str,
                         help='The name of the cluster to use, if left empty a temporary cluster will be created.')
     args = parser.parse_args()
