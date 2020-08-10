@@ -94,7 +94,7 @@ def create_namespace(name: str):
 def deploy(namespace: str, name: str, chart: str, values: str, version: str):
     return subprocess.run([
         "helm", "install", name, chart,
-        "-f", values,
+        "--values", values,
         "--namespace", namespace,
         "--version", version,
     ])
