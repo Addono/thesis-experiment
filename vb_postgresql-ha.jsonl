@@ -1,0 +1,15 @@
+{"start_time": 1597076669.355972, "time_to_initialize": 59.75199604034424, "time_to_first_request": 36.836395025253296, "time_to_all_requests": 49.26590013504028, "restarts": 0, "end_time": 1597076729.542604}
+{"start_time": 1597077180.379039, "time_to_initialize": 49.38598704338074, "time_to_first_request": 28.34161615371704, "time_to_all_requests": 45.88368892669678, "restarts": 0, "end_time": 1597077230.215638}
+{"start_time": 1597077654.493978, "time_to_initialize": 71.73072910308838, "time_to_first_request": 33.804327964782715, "time_to_all_requests": 39.52496910095215, "restarts": 0, "end_time": 1597077726.685181}
+{"start_time": 1597078125.3511071, "time_to_initialize": 47.027745962142944, "time_to_first_request": 32.254509687423706, "time_to_all_requests": 38.12305998802185, "restarts": 0, "end_time": 1597078172.80554}
+{"start_time": 1597078626.4074602, "time_to_initialize": 71.47349071502686, "time_to_first_request": 35.000972747802734, "time_to_all_requests": 49.05914068222046, "restarts": 0, "end_time": 1597078698.307128}
+{"start_time": 1597079124.5161479, "time_to_initialize": 66.4048261642456, "time_to_first_request": 22.904940128326416, "time_to_all_requests": 32.970736265182495, "restarts": 0, "end_time": 1597079191.375366}
+{"start_time": 1597079607.6847959, "time_to_initialize": 47.33681106567383, "time_to_first_request": 33.791102170944214, "time_to_all_requests": 39.85147714614868, "restarts": 0, "end_time": 1597079655.444721}
+{"start_time": 1597080046.275554, "time_to_initialize": 115.0571641921997, "time_to_first_request": 37.557124853134155, "time_to_all_requests": 43.59898495674133, "restarts": 0, "end_time": 1597080161.786125}
+{"start_time": 1597080586.609774, "time_to_initialize": 73.8202588558197, "time_to_first_request": 45.23319983482361, "time_to_all_requests": 67.14657783508301, "restarts": 0, "end_time": 1597080661.4785721}
+{"start_time": 1597081056.038412, "time_to_initialize": 71.74627780914307, "time_to_first_request": 39.1449658870697, "time_to_all_requests": 49.154135942459106, "restarts": 0, "end_time": 1597081128.26159}
+{"start_time": 1597081570.649812, "time_to_initialize": 49.464357137680054, "time_to_first_request": 30.58229923248291, "time_to_all_requests": 36.570080041885376, "restarts": 0, "end_time": 1597081620.805486}
+{"start_time": 1597082020.879349, "time_to_initialize": 76.26439189910889, "time_to_first_request": 46.339592933654785, "time_to_all_requests": 51.37987303733826, "restarts": 0, "end_time": 1597082097.9870179}
+{"start_time": 1597082492.615838, "time_to_initialize": 47.00067901611328, "time_to_first_request": 25.410351037979126, "time_to_all_requests": 31.35949206352234, "restarts": 0, "end_time": 1597082540.080561}
+{"start_time": 1597082955.058008, "time_to_initialize": 61.391754150390625, "time_to_first_request": 26.818620920181274, "time_to_all_requests": 32.484293937683105, "restarts": 0, "end_time": 1597083016.893159}
+{"start_time": 1597083410.907991, "time_to_initialize": 54.73780012130737, "time_to_first_request": 25.130243062973022, "time_to_all_requests": 31.21159815788269, "restarts": 0, "end_time": 1597083466.087144}
