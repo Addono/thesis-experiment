@@ -1,7 +1,9 @@
 import argparse
 import json
+import re
 import subprocess
 import time
+from uuid import uuid4
 from contextlib import contextmanager
 from typing import Iterator, TypedDict, Optional, Union, Iterable, Callable, io
 
@@ -44,7 +46,16 @@ APPLICATIONS = {
         },
         "repo_name": "bitnami",
         "repo_url": "https://charts.bitnami.com/bitnami",
-    }
+        "workload": {
+            "image": "bitnami/redis-cluster:6.0",
+            "env": {},
+            "command": lambda host: [
+                "sh", "-c",
+                f"redis-cli -h {host} -c SET foo \"{nonce}\" && redis-cli -h {host} -c GET foo | grep \"{nonce}\"",
+            ] if (nonce := str(uuid4())) else [],
+            "pod_filter": lambda pod_name: re.fullmatch(r"redis-cluster-\d+", pod_name) is not None,
+        },
+    },
 }
 
 
