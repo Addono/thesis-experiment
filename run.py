@@ -169,7 +169,7 @@ def run_test(namespace: str, workload) -> dict:
         container_statuses = get_container_statuses(namespace=namespace)
 
         # Check if all containers initialized
-        return all(map(lambda x: x["ready"], container_statuses))
+        return all(map(lambda x: x["ready"] or x["state"].get("terminated", {}).get("reason") == "Completed", container_statuses))
 
     def can_handle_request(host: str) -> bool:
         # Run a small workload as to test if it is functional
