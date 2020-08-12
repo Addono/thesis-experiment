@@ -104,9 +104,9 @@ def deploy(namespace: str, name: str, chart: str, values: Iterable[str], version
     ])
 
 
-def destroy_deployment(namespace: str):
+def destroy_deployment(name: str, namespace: str):
     return subprocess.run([
-        "helm", "delete", "postgresql-ha", "--namespace", namespace
+        "helm", "delete", name, "--namespace", namespace
     ])
 
 
@@ -262,7 +262,7 @@ def run_command(command: Command, cluster_context: str, application: str, result
                version=app_config["version"],
                )
     elif command == "destroy":
-        destroy_deployment(app_config["namespace"])
+        destroy_deployment(application, app_config["namespace"])
         destroy_namespace(app_config["namespace"])
     elif command == "test":
         metrics = run_test(app_config["namespace"], app_config["workload"])
