@@ -47,11 +47,11 @@ cluster:
   init: true
   ## Number of Redis nodes to be deployed
   ##
-  nodes: 6
+  nodes: 9
   ## Parameter to be passed as --cluster-replicas to the redis-cli --cluster create
   ## 1 means that we want a replica for every master created
   ##
-  replicas: 1
+  replicas: 2
 
   ## Configuration to access the Redis Cluster from outside the Kubernetes cluster
   ##
