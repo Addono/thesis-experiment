@@ -66,12 +66,13 @@ def temporary_kubernetes_cluster(name: str = "temp", region: str = 'ams3') -> It
     if create.returncode > 0:
         raise Exception("Failed creating Kubernetes cluster")
 
-    yield {'contextName': f"do-{region}-{name}"}
+    try:
+        yield {'contextName': f"do-{region}-{name}"}
+    finally:
+        delete = subprocess.run(['doctl', 'kubernetes', 'cluster', 'delete', name, '-f'])
 
-    delete = subprocess.run(['doctl', 'kubernetes', 'cluster', 'delete', name, '-f'])
-
-    if delete.returncode > 0:
-        raise Exception("Failed deleting Kubernetes cluster")
+        if delete.returncode > 0:
+            raise Exception("Failed deleting Kubernetes cluster")
 
 
 Command = type(Union['test', 'deploy', 'destroy', 'all'])
