@@ -386,7 +386,7 @@ updateJob:
 networkPolicy:
   ## Specifies whether a NetworkPolicy should be created
   ##
-  enabled: true
+  enabled: false
 
   ## The Policy model to apply. When set to false, only pods with the correct
   ## client label will have network access to the port Redis is listening
