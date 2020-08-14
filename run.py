@@ -56,6 +56,25 @@ APPLICATIONS = {
             "pod_filter": lambda pod_name: re.fullmatch(r"redis-cluster-\d+", pod_name) is not None,
         },
     },
+    "redis": {
+        "chart": "bitnami/redis",
+        "version": "10.7.16",
+        "namespace": "redis",
+        "values": {
+            "base": "redis/values.yaml",
+        },
+        "repo_name": "bitnami",
+        "repo_url": "https://charts.bitnami.com/bitnami",
+        "workload": {
+            "image": "bitnami/redis:6.0",
+            "env": {},
+            "command": lambda host: [
+                "sh", "-c",
+                f"redis-cli -h redis-master.redis SET foo \"{nonce}\" && redis-cli -h {host} GET foo | grep \"{nonce}\"",
+            ] if (nonce := str(uuid4())) else [],
+            "pod_filter": lambda pod_name: re.fullmatch(r"redis-(master|slave)-\d+", pod_name) is not None,
+        },
+    },
 }
 
 
