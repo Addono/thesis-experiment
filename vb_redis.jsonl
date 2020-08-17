@@ -1,0 +1,15 @@
+{"start_time": 1597387632.297886, "time_to_initialize": 44.51849603652954, "time_to_first_request": 26.742645978927612, "time_to_all_requests": 35.874338150024414, "restarts": 0, "end_time": 1597387677.189694}
+{"start_time": 1597388081.9020958, "time_to_initialize": 39.16924023628235, "time_to_first_request": 20.01854109764099, "time_to_all_requests": 28.15734601020813, "restarts": 0, "end_time": 1597388121.4453928}
+{"start_time": 1597388584.245549, "time_to_initialize": 35.10112905502319, "time_to_first_request": 18.94469690322876, "time_to_all_requests": 34.721076011657715, "restarts": 0, "end_time": 1597388619.734354}
+{"start_time": 1597389051.941174, "time_to_initialize": 26.319767951965332, "time_to_first_request": 18.04505491256714, "time_to_all_requests": 21.308932781219482, "restarts": 0, "end_time": 1597389078.640929}
+{"start_time": 1597389524.871524, "time_to_initialize": 39.27855587005615, "time_to_first_request": 19.733017921447754, "time_to_all_requests": 26.378828763961792, "restarts": 0, "end_time": 1597389564.808807}
+{"start_time": 1597390005.868042, "time_to_initialize": 37.78858804702759, "time_to_first_request": 19.68415093421936, "time_to_all_requests": 22.646996021270752, "restarts": 0, "end_time": 1597390044.060819}
+{"start_time": 1597391427.320065, "time_to_initialize": 32.44697904586792, "time_to_first_request": 20.712889194488525, "time_to_all_requests": 28.047428846359253, "restarts": 0, "end_time": 1597391460.176736}
+{"start_time": 1597391898.642117, "time_to_initialize": 42.032705783843994, "time_to_first_request": 16.42441987991333, "time_to_all_requests": 25.58162808418274, "restarts": 0, "end_time": 1597391941.080441}
+{"start_time": 1597392363.0561228, "time_to_initialize": 52.47673225402832, "time_to_first_request": 41.30808115005493, "time_to_all_requests": 44.34921336174011, "restarts": 0, "end_time": 1597392415.934221}
+{"start_time": 1597392849.434182, "time_to_initialize": 49.86397194862366, "time_to_first_request": 24.228822946548462, "time_to_all_requests": 31.1807541847229, "restarts": 0, "end_time": 1597392899.656648}
+{"start_time": 1597393282.04351, "time_to_initialize": 48.3353271484375, "time_to_first_request": 25.481775999069214, "time_to_all_requests": 31.874977111816406, "restarts": 0, "end_time": 1597393330.8495831}
+{"start_time": 1597393769.840677, "time_to_initialize": 45.98986506462097, "time_to_first_request": 27.180416107177734, "time_to_all_requests": 62.72445201873779, "restarts": 0, "end_time": 1597393833.02622}
+{"start_time": 1597394215.2772229, "time_to_initialize": 49.88689613342285, "time_to_first_request": 21.486974239349365, "time_to_all_requests": 23.840811014175415, "restarts": 0, "end_time": 1597394265.5651379}
+{"start_time": 1597394586.124047, "time_to_initialize": 45.338411808013916, "time_to_first_request": 22.556450843811035, "time_to_all_requests": 29.924815893173218, "restarts": 0, "end_time": 1597394631.839749}
+{"start_time": 1597395095.376543, "time_to_initialize": 52.86743402481079, "time_to_first_request": 33.648958921432495, "time_to_all_requests": 40.634926080703735, "restarts": 0, "end_time": 1597395148.615655}
