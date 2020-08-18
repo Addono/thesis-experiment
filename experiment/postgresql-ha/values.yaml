@@ -29,7 +29,7 @@ global:
 postgresqlImage:
   #registry: container-registry-proxy.herokuapp.com
   repository: bitnami/postgresql-repmgr
-  tag: 11.8.0-debian-10-r55
+  tag: 11.8
   ## Specify a imagePullPolicy. Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
@@ -51,7 +51,7 @@ postgresqlImage:
 pgpoolImage:
   #registry: container-registry-proxy.herokuapp.com
   repository: bitnami/pgpool
-  tag: 4.1.2-debian-10-r59
+  tag: 4.1
   ## Specify a imagePullPolicy. Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##

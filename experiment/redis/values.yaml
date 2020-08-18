@@ -3,7 +3,7 @@
 ## Current available global Docker image parameters: imageRegistry and imagePullSecrets
 ##
 global:
-  imageRegistry: container-registry-proxy.herokuapp.com
+  #imageRegistry: container-registry-proxy.herokuapp.com
   # imagePullSecrets:
   #   - myRegistryKeySecretName
   # storageClass: myStorageClass
