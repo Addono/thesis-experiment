@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: pip install -r analysis/requirements.txt
+
+      - name: Install jupytext
+        run: pip install jupytext
+
+      - name: Convert notebook to Python
+        run: jupytext --to py --output analysis/notebook.py analysis/notebook.ipynb
+
+      - name: Run notebook
+        run: python analysis/notebook.py
+
+      - name: Publish to Github Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: output
