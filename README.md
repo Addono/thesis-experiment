@@ -50,6 +50,34 @@ Contains a Jupyter notebook to generate the plots from the data directory. It as
 
 The plots are automatically published to Github Pages:
 
+`https://aknapen.nl/thesis-experiment/box_and_scatter_plot-{metric}.{file_type}`
+
+Where `{metric}` can be `restarts`, `time_to_first_request`, `time_to_all_requests` or `time_to_initialize`. The supported values for `{file_type}` are `pdf`, `png`, `jpg` and `svg`.
+
+#### SVG
+
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-restarts.svg)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-restarts.svg)
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_first_request.svg)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_first_request.svg)
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_all_requests.svg)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_all_requests.svg)
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_initialize.svg)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_initialize.svg)
+
+#### PNG
+
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-restarts.png)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-restarts.png)
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_first_request.png)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_first_request.png)
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_all_requests.png)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_all_requests.png)
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_initialize.png)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_initialize.png)
+
+#### JPG
+
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-restarts.jpg)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-restarts.jpg)
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_first_request.jpg)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_first_request.jpg)
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_all_requests.jpg)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_all_requests.jpg)
+[![](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_initialize.jpg)](https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_initialize.jpg)
+
+
+#### PDF
+
 * https://aknapen.nl/thesis-experiment/box_and_scatter_plot-restarts.pdf
 * https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_first_request.pdf
 * https://aknapen.nl/thesis-experiment/box_and_scatter_plot-time_to_all_requests.pdf
