@@ -10,7 +10,7 @@ This repository contains the code needed to run the experiments and process the 
 ### Requirements
 
 You need to have the following available on your system:
-* Python 3
+* Python 3.8, or newer
 * `kubectl`
 * `kubectx`
 * Helm 3
