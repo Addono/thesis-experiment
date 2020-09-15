@@ -126,7 +126,7 @@ def create_namespace(name: str):
     return subprocess.run(["kubectl", "create", "namespace", name])
 
 
-def deploy(namespace: str, name: str, chart: str, values: Iterable[str], version: str):
+def create_helm_deployment(namespace: str, name: str, chart: str, values: Iterable[str], version: str):
     return subprocess.run([
         "helm", "install", name, chart,
         *[x for value_file in values for x in ("--values", value_file,)],
@@ -135,7 +135,7 @@ def deploy(namespace: str, name: str, chart: str, values: Iterable[str], version
     ])
 
 
-def destroy_deployment(name: str, namespace: str):
+def destroy_helm_deployment(name: str, namespace: str):
     return subprocess.run([
         "helm", "delete", name, "--namespace", namespace
     ])
@@ -285,15 +285,15 @@ def run_command(command: Command, cluster_context: str, application: str, result
         add_repo(app_config["repo_name"], app_config["repo_url"])
         create_namespace(app_config["namespace"])
 
-        # Run the deploy
-        deploy(namespace=app_config["namespace"],
-               name=application,
-               chart=app_config["chart"],
-               values=[app_config["values"]["base"]],
-               version=app_config["version"],
-               )
+        # Deploy the application using Helm
+        create_helm_deployment(namespace=app_config["namespace"],
+                               name=application,
+                               chart=app_config["chart"],
+                               values=[app_config["values"]["base"]],
+                               version=app_config["version"],
+                               )
     elif command == "destroy":
-        destroy_deployment(application, app_config["namespace"])
+        destroy_helm_deployment(application, app_config["namespace"])
         destroy_namespace(app_config["namespace"])
     elif command == "test":
         metrics = run_test(app_config["namespace"], app_config["workload"])
