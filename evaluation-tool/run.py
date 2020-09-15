@@ -126,7 +126,7 @@ def create_namespace(name: str):
     return subprocess.run(["kubectl", "create", "namespace", name])
 
 
-def create_helm_deployment(namespace: str, name: str, chart: str, values: Iterable[str], version: str):
+def create_helm_deployment(name: str, namespace: str, chart: str, values: Iterable[str], version: str):
     return subprocess.run([
         "helm", "install", name, chart,
         *[x for value_file in values for x in ("--values", value_file,)],
@@ -286,8 +286,8 @@ def run_command(command: Command, cluster_context: str, application: str, result
         create_namespace(app_config["namespace"])
 
         # Deploy the application using Helm
-        create_helm_deployment(namespace=app_config["namespace"],
-                               name=application,
+        create_helm_deployment(name=application,
+                               namespace=app_config["namespace"],
                                chart=app_config["chart"],
                                values=[app_config["values"]["base"]],
                                version=app_config["version"],
