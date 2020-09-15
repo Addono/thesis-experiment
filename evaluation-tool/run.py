@@ -129,6 +129,7 @@ def create_namespace(name: str):
 def create_helm_deployment(name: str, namespace: str, chart: str, values: Iterable[str], version: str):
     return subprocess.run([
         "helm", "install", name, chart,
+        # Add zero or more times the --values {value} arguments with all values
         *[x for value_file in values for x in ("--values", value_file,)],
         "--namespace", namespace,
         "--version", version,
@@ -183,6 +184,7 @@ def run_test(namespace: str, workload) -> dict:
         return subprocess.run([
             'kubectl', 'run', 'workload', '--rm', '--tty', '-i', '--restart', 'Never',
             '--namespace', "default", '--image', workload["image"],
+            # Add zero or more times the --env argument with all our environment variables
             *[x for name, value in workload["env"].items() for x in ("--env", f"{name}={value}")],
             '--command', '--', *workload["command"](host),
         ])
