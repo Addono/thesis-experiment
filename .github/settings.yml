@@ -5,7 +5,7 @@ repository:
   name: thesis-experiment
 
   # A short description of the repository that will show up on GitHub
-  description: Code related to the experiments done for "Chaos Engineering Testing for Containerized Multi-Version Deployments"
+  description: Code for, and results of, the experiment conducted in "Chaos Engineering Testing for Containerized Multi-Version Deployments".
 
   # A URL with more information about the repository
   homepage: https://www.overleaf.com/read/yxzbstvysmsf
