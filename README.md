@@ -1,5 +1,5 @@
 # Thesis Experiment
-This repository contains the code needed to run the experiments and process the results for Adriaan Knapen's thesis "[Chaos Engineering Testing for Containerized Multi-Version Deployments](https://www.overleaf.com/read/yxzbstvysmsf)". Individual parts of this tool are stored in their own directory:
+This repository contains the code needed to run the experiments and process the results for Adriaan Knapen's thesis "[Chaos Engineering Testing for Containerized Multi-Version Deployments](https://www.overleaf.com/read/yxzbstvysmsf)" [[KTH (Final version)](https://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-291281)] [[Aalto (Final version)](https://aaltodoc.aalto.fi/handle/123456789/103124)]. Individual parts of this tool are stored in their own directory:
 
 * **Evaluation tool**: Runs the experiment and collects results.
 * **Results**: Contains the raw measurement results collected using the evaluation tool.
